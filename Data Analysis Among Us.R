@@ -1,5 +1,4 @@
 ##### DATA CLEANING #####
-
 #REMOVING 0's FROM POLLUTING DATASET
 raw_data[raw_data == 0] <- NA
 
@@ -34,23 +33,23 @@ Player.Number <- c(rep(1, length(p1.dat)), rep(2, length(p2.dat)), rep(3, length
                    rep(9, length(p9.dat)), rep(10, length(p10.dat)))
 
 #Building the Actual Data Frame
-#Maybe make player #?
 amongus.df <- data.frame(Player.Number, Player.Type, Missing.Players, Probabilities, stringsAsFactors = F)
 
+
+#Variables for Later
+prob_at_six_player_left_p <- amongus.df$Probabilities[(amongus.df$Player.Type == "Player") & (amongus.df$Missing.Players == 4)]
+prob_at_six_player_left_i <- amongus.df$Probabilities[(amongus.df$Player.Type == "Imposter") & (amongus.df$Missing.Players == 4)]
+prob_at_six_player_left_b <- amongus.df$Probabilities[(amongus.df$Missing.Players == 4)]
 #Generating Normal Distributions
 
-x.axis.probabilities <- amongus.df$Probabilities[(amongus.df$Missing.Players == 4)]
+Player_distribution <- dnorm(prob_at_six_player_left_p, mean = mean(prob_at_six_player_left_p, na.rm = T), 
+                             sd = sd(prob_at_six_player_left_p, na.rm = T))
 
-Player_distribution <- dnorm(amongus.df$Probabilities[(amongus.df$Player.Type == "Player") & (amongus.df$Missing.Players == 4)], 
-              mean = mean(amongus.df$Probabilities[(amongus.df$Player.Type == "Player") & (amongus.df$Missing.Players == 4)], na.rm = T), 
-              sd = sd(amongus.df$Probabilities[(amongus.df$Player.Type == "Player") & (amongus.df$Missing.Players == 4)], na.rm = T))
+Imposter_distribution <- dnorm(prob_at_six_player_left_i,mean = mean(prob_at_six_player_left_i, na.rm = T),
+                               sd = sd(prob_at_six_player_left_i, na.rm = T))
 
-Imposter_distribution <- dnorm(amongus.df$Probabilities[(amongus.df$Player.Type == "Imposter") & (amongus.df$Missing.Players == 4)],
-                               mean = mean(amongus.df$Probabilities[(amongus.df$Player.Type == "Imposter") & (amongus.df$Missing.Players == 4)], na.rm = T),
-                               sd = sd(amongus.df$Probabilities[(amongus.df$Player.Type == "Imposter") & (amongus.df$Missing.Players == 4)], na.rm = T))
-
-#plot(amongus.df$Probabilities[amongus.df$Missing.Players == 4], test)
-#amongus.df$Probabilities[(amongus.df$Player.Type == "Imposter") & (amongus.df$Missing.Players == 4)]
+Both_distribtuion <- dnorm(prob_at_six_player_left_b, mean = mean(prob_at_six_player_left_b, na.rm = T),
+                           sd = sd(prob_at_six_player_left_b, na.rm = T))
 
 
 #Plots of Normal Distributions
@@ -63,28 +62,29 @@ imposter_plot <- plot(amongus.df$Probabilities[(amongus.df$Player.Type == "Impos
      main = "Imposter Distribution in Among Us", xlab = "Probability for Imposters at 6 Players Remaining", ylab = "Probability Denisty",
      type = "p", col = "blue")
 
+both_plot <- plot(prob_at_six_player_left_b, Both_distribtuion, main = "Player Distribution in Among Us", xlab = "Probability for all
+                  Players at 6 Players Remaining", ylab = "Probability Density", col = "purple")
+
 
 #initial T-test to test for differences in player and imposter means
 t.test(amongus.df$Probabilities[amongus.df$Missing.Players == 4] ~ amongus.df$Player.Type[amongus.df$Missing.Players == 4])
-
-#Look for z-scores
+#Shows that there is a way to tell the difference between players and imposters at this stage in the game theoretically
 
 player_1_data <- raw_data[1,5,]
 player_2_data <- raw_data[1:8,5,]
 imposter_1_data <- raw_data[9,5,]
 imposter_2_data <- raw_data[10,5,]
-
+player_data <- raw_data[1:10,5,]
 
 #intitial data viewing
 hist(player_1_data, prob = T, breaks = seq(0, 0.45, 0.05), xlim = c(0,0.5), xlab = "Probability")
 hist(player_2_data, prob = T, breaks = seq(0, 0.45, 0.05), xlim = c(0,0.5), xlab = "Probability")
-
 hist(imposter_1_data, prob = T, breaks = seq(0, 0.45, 0.05), xlim = c(0,0.5), xlab = "Probability")
 hist(imposter_2_data, prob = T, breaks = seq(0, 0.45, 0.05), xlim = c(0,0.5), xlab = "Probability")
+hist(player_data, prob = T, breaks = seq(0, 0.45, 0.05), xlim = c(0,0.5), xlab = "Probability")
 
-
-
-#plot(Probabilities ~ Player.Type, data = amongus.df)
-#summary(aov(Probabilities ~ Player.Type, data = amongus.df))
-#summary(aov(Probabilities[amongus.df$Missing.Players == 4] ~ Player.Type[amongus.df$Missing.Players == 4], data = amongus.df))
-#plot(Probabilities[amongus.df$Missing.Players == 4] ~ Player.Type[amongus.df$Missing.Players == 4], data = amongus.df)
+#Data Vizualization and analyses shows z-score can be conservative estimate for total population of players
+#Conservative estimate using both imposters and players grouped gives a better estimate than just using either or
+#Calculating total population percentage of a given probability can also be achieved for a liberal guess
+#Another method is summing NA's and less than an inputted probability value and compare to those that are equal for players
+#different document for function and z-score/calculation methods. Will be interactive for players.
