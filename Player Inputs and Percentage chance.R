@@ -24,7 +24,7 @@ liberal.score <- function(probability, missing_players, df){
   #Caclulating the liberal score by dividing those more or equal to the value of probability at # players missing
   #by total population (including the dead). Use dead because they still make up a percentage chance of being
   #at that specific state by this time in the game
-  sim_score <- more.p/(num.na + less.p + more.p)
+  sim_score <- (num.na + less.p)/(num.na + less.p + more.p)
   sim_score <- sim_score * 100
   return(sim_score)
 }
@@ -55,8 +55,7 @@ while(flag == TRUE){
   choice <- readline("What would you like to do: ")
   
   if(choice == "Meeting" | choice == "meeting"){
-    answer <- as.integer(readline("How many players are died between last meeting and this one? 
-              Type Back to go back to the main menu: "))
+    answer <- as.integer(readline("How many players died between last meeting and this one? Type Back to go back to the main menu: "))
     #Minus 3 because thats the max amount of players that can be in a game and not lose
     if((answer %in% c(1:(length(input_df[,1])-3))) == TRUE){
       
@@ -75,9 +74,9 @@ while(flag == TRUE){
         if(input_df$Player.Name[color_counter] == eliminated_names[counter]){
           
           p.color1 <- readline(paste0("What player would you like to put a point against for the killing of ", 
-                                      eliminated_names[counter], ": "))
+                      eliminated_names[counter], ": "))
           p.color2 <- readline(paste0("What other player would you like to put a point against for the killing of ", 
-                                      eliminated_names[counter], ": "))
+                      eliminated_names[counter], ": "))
           
           prob_to_be_added <- input_df[color_counter, 2]/2
           #Take the colors/names players selected and add half the probability of the player eliminated to each
@@ -109,18 +108,15 @@ while(flag == TRUE){
   }
   
   else if(choice == "Probability" | choice == "probability"){
-    answer <- as.double(readline("Which population probability percentage would you like to check? 
-              (type it exactly as shown in the Check table) or would you like to go back: "))
+    answer <- as.double(readline("Which population probability percentage would you like to check?: "))
     
     if((0 < answer) & (answer < 1)){
       eliminated <- as.integer(readline("How many players are dead in the game: "))
       conservative <- conservative.score(answer, eliminated, amongus.df)
-      #liberal <- liberal.score(answer, eliminated, amongus.df)
-      cat(paste0("A conservative estimate of a player with this population probability at this stage
-                   in the game has a ", conservative, "% chance of being an Imposter."))
+      liberal <- liberal.score(answer, eliminated, amongus.df)
+      cat(paste0("A conservative estimate of a player with this population probability at this stage in the game has a ", conservative, "% chance of being an Imposter."))
       
-      #print(paste0("A liberal estimate of a player with this population probability at this stage
-      #             in the game has a ", liberal, "% chance of being an Imposter."))
+      print(paste0("A liberal estimate of a player with this population probability at this stage in the game has a ", liberal, "% chance of being an Imposter."))
     }else{
       print("Your answer wasn't valid or you chose to go back")
     }
