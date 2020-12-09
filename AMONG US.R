@@ -388,3 +388,37 @@ for(y in 1:2000){
   }
 }
 
+
+##### DATA CLEANING #####
+#REMOVING 0's FROM POLLUTING DATASET
+raw_data[raw_data == 0] <- NA
+
+#Creating Data Frame to Test data
+
+#Extract Probability values to build the data frame and player type vector
+p1.dat <- raw_data[1,,]
+p2.dat <- raw_data[2,,]
+p3.dat <- raw_data[3,,]
+p4.dat <- raw_data[4,,]
+p5.dat <- raw_data[5,,]
+p6.dat <- raw_data[6,,]
+p7.dat <- raw_data[7,,]
+p8.dat <- raw_data[8,,]
+p9.dat <- raw_data[9,,]
+p10.dat <- raw_data[10,,]
+
+#Build the Player Type Vector for the Data Frame
+all_player_prob <- vector("character", length(p1.dat)*10)
+all_player_prob[1:(length(p1.dat)*8)] <- "Player"
+all_player_prob[((length(p1.dat)*8)+1):length(all_player_prob)] <- "Imposter"
+
+#Assign Column names for the data frame and making the missing players vector
+Probabilities <- c(p1.dat, p2.dat, p3.dat, p4.dat, p5.dat, p6.dat, p7.dat, p8.dat, p9.dat, p10.dat)
+Player.Type <- all_player_prob
+Missing.Players <- rep(0:8, (length(Probabilities)/length(raw_data[1,,1])))
+Player.Number <- c(rep(1, length(p1.dat)), rep(2, length(p2.dat)), rep(3, length(p3.dat)), rep(4, length(p4.dat)),
+                   rep(5, length(p5.dat)), rep(6, length(p6.dat)), rep(7, length(p7.dat)), rep(8, length(p8.dat)),
+                   rep(9, length(p9.dat)), rep(10, length(p10.dat)))
+
+#Building the Actual Data Frame
+amongus.df <- data.frame(Player.Number, Player.Type, Missing.Players, Probabilities, stringsAsFactors = F)
