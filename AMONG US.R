@@ -422,3 +422,5 @@ Player.Number <- c(rep(1, length(p1.dat)), rep(2, length(p2.dat)), rep(3, length
 
 #Building the Actual Data Frame
 amongus.df <- data.frame(Player.Number, Player.Type, Missing.Players, Probabilities, stringsAsFactors = F)
+write.csv(amongus.df, "C:\\Users\\josh\\Desktop\\R-Projects\\Amongus-Data Project\\Amongus-Detector\\10P2I.csv", 
+row.names= FALSE)
